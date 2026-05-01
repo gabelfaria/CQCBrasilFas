@@ -74,6 +74,23 @@
             scrollbar-width: thick;
             scrollbar-color: #ffcc00 #111;
         }
+        .desktop-nav {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .nav-btn {
+            background: #111;
+            border: 1px solid #ffcc00;
+            color: #ffcc00;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+        }
+        .nav-btn:hover { background: #ffcc00; color: #000; }
 
         .year-scroll {
             display: flex;
@@ -264,6 +281,10 @@
 
     <!-- DESKTOP VIEW -->
     <div class="desktop-view">
+        <div class="desktop-nav">
+            <button class="nav-btn" id="prev-year">← Ano anterior</button>
+            <button class="nav-btn" id="next-year">Próximo ano →</button>
+        </div>
         <div class="year-container">
             <div class="year-scroll" id="year-scroll"></div>
         </div>
@@ -292,32 +313,44 @@
 
     <script>
         // Banco de dados de links coletados
-        const episodeLinks = {
-            "2008-03-17": "https://www.youtube.com/watch?v=9Lt5m80fMTE",
-            "2009-03-09": "https://www.youtube.com/watch?v=CYay0K9T2S4",
-            "2011-03-14": "https://www.youtube.com/watch?v=uHDLsc2bV3E",
-            "2011-03-21": "https://www.youtube.com/watch?v=uHDLsc2bV3E",
-            "2011-03-28": "https://www.youtube.com/watch?v=uHDLsc2bV3E",
-            "2011-08-22": "https://www.youtube.com/watch?v=9Lt5m80fMTE",
-            "2011-08-29": "https://www.youtube.com/watch?v=aVBVPVkJoKY",
-            "2011-09-05": "https://www.youtube.com/watch?v=CYay0K9T2S4",
-            "2011-09-12": "https://www.youtube.com/watch?v=vkTiFV8wrRk",
-            "2011-09-19": "https://www.youtube.com/watch?v=AcmK2J8b_4w",
-            "2011-09-26": "https://www.youtube.com/watch?v=uHDLsc2bV3E",
-            "2011-10-03": "https://www.youtube.com/watch?v=fW1t4OcQSCI",
-            "2012-12-17": "https://www.youtube.com/watch?v=9Lt5m80fMTE",
-            "2013-06-17": "https://www.youtube.com/watch?v=fW1t4OcQSCI",
-            "2015-03-09": "https://www.youtube.com/watch?v=vkTiFV8wrRk",
-            "2015-03-16": "https://www.youtube.com/watch?v=vkTiFV8wrRk",
-            "2015-03-23": "https://www.youtube.com/watch?v=vkTiFV8wrRk",
-            "2015-03-30": "https://www.youtube.com/watch?v=vkTiFV8wrRk",
-            "2015-04-06": "https://www.youtube.com/watch?v=vkTiFV8wrRk",
-            "2015-04-13": "https://www.youtube.com/watch?v=vkTiFV8wrRk",
-            "2015-04-20": "https://www.youtube.com/watch?v=vkTiFV8wrRk",
-            "2015-04-27": "https://www.youtube.com/watch?v=vkTiFV8wrRk",
-            "2015-05-04": "https://www.youtube.com/watch?v=vkTiFV8wrRk",
-            "2015-05-11": "https://www.youtube.com/watch?v=vkTiFV8wrRk"
-        };
+        const rawEntries = [
+            { date: "2008-03-17", title: "Programa completo", url: "https://www.youtube.com/watch?v=9Lt5m80fMTE" },
+            { date: "2009-03-09", title: "Programa completo", url: "https://www.youtube.com/watch?v=CYay0K9T2S4" },
+            { date: "2011-03-14", title: "Programa completo", url: "https://www.youtube.com/watch?v=uHDLsc2bV3E" },
+            { date: "2011-03-21", title: "Programa completo", url: "https://www.youtube.com/watch?v=uHDLsc2bV3E" },
+            { date: "2011-03-28", title: "Programa completo", url: "https://www.youtube.com/watch?v=uHDLsc2bV3E" },
+            { date: "2011-08-22", title: "Programa completo", url: "https://www.youtube.com/watch?v=9Lt5m80fMTE" },
+            { date: "2011-08-29", title: "Programa completo", url: "https://www.youtube.com/watch?v=aVBVPVkJoKY" },
+            { date: "2011-09-05", title: "Programa completo", url: "https://www.youtube.com/watch?v=CYay0K9T2S4" },
+            { date: "2011-09-12", title: "Programa completo", url: "https://www.youtube.com/watch?v=vkTiFV8wrRk" },
+            { date: "2011-09-19", title: "Programa completo", url: "https://www.youtube.com/watch?v=AcmK2J8b_4w" },
+            { date: "2011-09-26", title: "Programa completo", url: "https://www.youtube.com/watch?v=uHDLsc2bV3E" },
+            { date: "2011-10-03", title: "Programa completo", url: "https://www.youtube.com/watch?v=fW1t4OcQSCI" },
+            { date: "2012-12-17", title: "Programa completo", url: "https://www.youtube.com/watch?v=9Lt5m80fMTE" },
+            { date: "2013-06-17", title: "Programa completo", url: "https://www.youtube.com/watch?v=fW1t4OcQSCI" },
+            { date: "2015-03-09", title: "Programa completo", url: "https://www.youtube.com/watch?v=vkTiFV8wrRk" },
+            { date: "2015-03-16", title: "Programa completo", url: "https://www.youtube.com/watch?v=vkTiFV8wrRk" },
+            { date: "2015-03-23", title: "Programa completo", url: "https://www.youtube.com/watch?v=vkTiFV8wrRk" },
+            { date: "2015-03-30", title: "Programa completo", url: "https://www.youtube.com/watch?v=vkTiFV8wrRk" },
+            { date: "2015-04-06", title: "Programa completo", url: "https://www.youtube.com/watch?v=vkTiFV8wrRk" },
+            { date: "2015-04-13", title: "Programa completo", url: "https://www.youtube.com/watch?v=vkTiFV8wrRk" },
+            { date: "2015-04-20", title: "Programa completo", url: "https://www.youtube.com/watch?v=vkTiFV8wrRk" },
+            { date: "2015-04-27", title: "Programa completo", url: "https://www.youtube.com/watch?v=vkTiFV8wrRk" },
+            { date: "2015-05-04", title: "Programa completo", url: "https://www.youtube.com/watch?v=vkTiFV8wrRk" },
+            { date: "2015-05-11", title: "Programa completo", url: "https://www.youtube.com/watch?v=vkTiFV8wrRk" }
+        ];
+        const episodeLinks = {};
+        rawEntries.forEach(entry => {
+            if (!episodeLinks[entry.date]) episodeLinks[entry.date] = [];
+            episodeLinks[entry.date].push({ title: entry.title, url: entry.url });
+        });
+        Object.keys(episodeLinks).forEach(date => {
+            const [year, month, day] = date.split("-");
+            episodeLinks[date].push({
+                title: "Busca no YouTube",
+                url: `https://www.youtube.com/results?search_query=CQC+${day}%2F${month}%2F${year}+completo`
+            });
+        });
 
         const seasons = [
             { year: 2008, start: "2008-03-17", end: "2008-12-29" },
@@ -341,17 +374,19 @@
             const dateStr = getFormattedDate(year, month, day);
             const dateObj = new Date(year, month, day);
             const isMon = dateObj.getDay() === 1;
-            const link = episodeLinks[dateStr];
+            const links = episodeLinks[dateStr];
             
-            const el = document.createElement(link ? 'a' : 'div');
+            const el = document.createElement('div');
             el.className = isMobile ? 'mobile-day' : 'day';
             el.innerText = day;
 
-            if (link) {
-                el.href = link;
-                el.target = "_blank";
+            if (links) {
                 el.classList.add(isMobile ? 'mobile-episode' : 'episode');
-                el.title = "Assistir Episódio de " + day + "/" + (month+1) + "/" + year;
+                el.title = "Abrir conteúdos de " + day + "/" + (month+1) + "/" + year;
+                el.onclick = () => {
+                    const linksText = links.map((item, i) => `${i + 1}. ${item.title}\n${item.url}`).join("\n\n");
+                    alert(`Conteúdos de ${day}/${month + 1}/${year}\n\n${linksText}`);
+                };
             } else if (isMon) {
                 el.classList.add(isMobile ? 'mobile-monday' : 'monday');
             }
@@ -416,6 +451,14 @@
 
         yearSelect.onchange = document.getElementById('month-select').onchange = updateMobile;
         updateMobile();
+
+        const yearContainer = document.querySelector('.year-container');
+        document.getElementById('prev-year').onclick = () => {
+            yearContainer.scrollBy({ left: -1240, behavior: 'smooth' });
+        };
+        document.getElementById('next-year').onclick = () => {
+            yearContainer.scrollBy({ left: 1240, behavior: 'smooth' });
+        };
     </script>
 </body>
 </html>
